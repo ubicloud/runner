@@ -72,11 +72,15 @@ namespace GitHub.Runner.Worker.Handlers
                 Environment["ACTIONS_ID_TOKEN_REQUEST_URL"] = generateIdTokenUrl;
                 Environment["ACTIONS_ID_TOKEN_REQUEST_TOKEN"] = systemConnection.Authorization.Parameters[EndpointAuthorizationParameters.AccessToken];
             }
-            if (systemConnection.Data.TryGetValue("ResultsServiceUrl", out var resultsUrl) && !string.IsNullOrEmpty(resultsUrl))
+            string customResultsUrl = System.Environment.GetEnvironmentVariable("CUSTOM_ACTIONS_RESULTS_URL");
+            if (!string.IsNullOrEmpty(customResultsUrl))
+            {
+                Environment["ACTIONS_RESULTS_URL"] = customResultsUrl;
+            }
+            else if (systemConnection.Data.TryGetValue("ResultsServiceUrl", out var resultsUrl) && !string.IsNullOrEmpty(resultsUrl))
             {
                 Environment["ACTIONS_RESULTS_URL"] = resultsUrl;
             }
-
             if (ExecutionContext.Global.Variables.GetBoolean("actions_uses_cache_service_v2") ?? false)
             {
                 Environment["ACTIONS_CACHE_SERVICE_V2"] = bool.TrueString;
